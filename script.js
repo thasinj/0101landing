@@ -23,16 +23,44 @@ navLinks.querySelectorAll('a').forEach(link => {
 // Form submission
 document.getElementById('contactForm').addEventListener('submit', (e) => {
   e.preventDefault();
-  const btn = e.target.querySelector('button[type="submit"]');
-  btn.textContent = 'Message Sent!';
-  btn.style.background = '#34d399';
-  btn.style.boxShadow = '0 4px 20px rgba(52, 211, 153, 0.3)';
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+  const ctaBox = form.closest('.cta-box');
+
+  // Disable form
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Sending...';
+  form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+
+  // Fake network delay
   setTimeout(() => {
-    btn.textContent = "Let's Talk";
-    btn.style.background = '';
-    btn.style.boxShadow = '';
-    e.target.reset();
-  }, 3000);
+    // Replace form with success message
+    form.style.opacity = '0';
+    form.style.transform = 'translateY(10px)';
+    setTimeout(() => {
+      form.remove();
+      const success = document.createElement('div');
+      success.className = 'form-success';
+      success.innerHTML = `
+        <div class="success-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h3>We got your message!</h3>
+        <p>Thanks for reaching out. We'll get back to you within 24 hours.</p>
+      `;
+      success.style.opacity = '0';
+      success.style.transform = 'translateY(10px)';
+      ctaBox.appendChild(success);
+      requestAnimationFrame(() => {
+        success.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        success.style.opacity = '1';
+        success.style.transform = 'translateY(0)';
+      });
+    }, 300);
+  }, 1500);
 });
 
 // Scroll animations
